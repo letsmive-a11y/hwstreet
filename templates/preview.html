@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview Lelang — HWStreet Diecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:ital,wght@0,400;0,500;0,600;0,700;0,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/preview.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="static/images/logos.png" alt="HWStreet Logo" class="brand-logo">
+    <div class="brand-info">
+      <div class="brand-name">HWStreet</div>
+      <div class="brand-sub">Diecast Mgmt</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Menu Utama</span>
+    <a href="/" class="nav-link">
+      <span class="nav-icon">🏠</span> Dashboard
+    </a>
+    <a href="/barang" class="nav-link">
+      <span class="nav-icon">📦</span> Kelola Stok
+    </a>
+    <a href="/jadwal" class="nav-link">
+      <span class="nav-icon">🗓</span> Jadwal Lelang
+    </a>
+    <a href="/buat-jadwal" class="nav-link">
+      <span class="nav-icon">➕</span> Buat Jadwal
+    </a>
+    <a href="/jadwal" class="nav-link active">
+      <span class="nav-icon">👁</span> Preview Jadwal
+    </a>
+    <a href="/logout" class="nav-link">
+      <span class="nav-icon">🚪</span> Logout
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    HWStreet Diecast © 2024
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Preview Lelang</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-crumb">Detail caption & poster untuk <span>{{ data.nama if data else '—' }}</span></div>
+    </div>
+    <div class="topbar-right">
+      <a href="/jadwal" class="back-btn">← Kembali ke Jadwal</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Auction Preview</div>
+        <div class="page-heading">Preview Jadwal</div>
+      </div>
+    </div>
+
+    {% if data %}
+    <div class="preview-grid">
+
+      <!-- IMAGE PANEL -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">🖼 Poster Lelang</div>
+          <span class="panel-badge green">🔥 Auction Ready</span>
+        </div>
+        <div class="image-wrap">
+          <img src="/{{ data.image }}" alt="{{ data.nama }}">
+          <div class="image-label">
+            <div class="image-label-name">{{ data.nama }}</div>
+            <div class="image-label-tag">📍 HWStreet Diecast</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="right-stack">
+
+        <!-- Meta Info -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">📋 Informasi Barang</div>
+          </div>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <div class="meta-key">Nama Barang</div>
+              <div class="meta-val">{{ data.nama }}</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-key">Status</div>
+              <div class="meta-val green">Siap Lelang</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-key">Platform</div>
+              <div class="meta-val">HWStreet</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-key">Format</div>
+              <div class="meta-val accent">Caption + Image</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caption -->
+        <div class="panel">
+          <div class="caption-header">
+            <span class="caption-label">💬 Caption Lelang</span>
+            <span class="char-count" id="charCount">0 karakter</span>
+          </div>
+          <div class="caption-body" id="captionText">{{ data.caption }}</div>
+          <div class="tips-card">
+            <span class="tips-icon">💡</span>
+            <div class="tips-text">
+              <strong>Pro Tip:</strong> Pastikan caption sudah dicek sebelum diposting. Gunakan gambar yang jelas dan caption yang informatif untuk meningkatkan engagement lelang.
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn-copy" id="copyBtn" onclick="copyCaption()">
+              <span id="copyBtnText">📋 Copy Caption</span>
+            </button>
+            <a href="https://instagram.com/hwstreet_diecast" target="_blank" class="btn-instagram">
+              📱 Follow Instagram
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% else %}
+    <div class="panel" style="padding: 60px 24px; text-align: center; color: var(--text-muted);">
+      <div style="font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4;">🔍</div>
+      <div style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 6px;">Data tidak ditemukan</div>
+      <div style="font-size: 0.82rem; color: var(--text-light);">Jadwal lelang tidak tersedia atau telah dihapus.</div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Caption berhasil disalin!</div>
+
+<script>
+  const captionEl = document.getElementById('captionText');
+  const charCountEl = document.getElementById('charCount');
+  if (captionEl && charCountEl) {
+    charCountEl.textContent = captionEl.innerText.length + ' karakter';
+  }
+
+  function copyCaption() {
+    const caption = `{{ data.caption }}`;
+    navigator.clipboard.writeText(caption).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const btnText = document.getElementById('copyBtnText');
+      btn.classList.add('copied');
+      btnText.textContent = '✅ Tersalin!';
+
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btnText.textContent = '📋 Copy Caption';
+        toast.classList.remove('show');
+      }, 2500);
+    });
+  }
+</script>
+
+</body>
+</html>

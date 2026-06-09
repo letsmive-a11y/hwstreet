@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Stok — HWStreet Diecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:ital,wght@0,400;0,500;0,600;0,700;0,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/barang.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="static/images/logos.png" alt="HWStreet Logo" class="brand-logo">
+    <div class="brand-info">
+      <div class="brand-name">HWStreet</div>
+      <div class="brand-sub">Diecast Mgmt</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Menu Utama</span>
+    <a href="/" class="nav-link">
+      <span class="nav-icon">🏠</span> Dashboard
+    </a>
+    <a href="/barang" class="nav-link active">
+      <span class="nav-icon">📦</span> Kelola Stok
+    </a>
+    <a href="/jadwal" class="nav-link">
+      <span class="nav-icon">🗓</span> Jadwal Lelang
+    </a>
+    <a href="/buat-jadwal" class="nav-link">
+      <span class="nav-icon">➕</span> Buat Jadwal
+    </a>
+    <a href="/jadwal" class="nav-link">
+      <span class="nav-icon">👁</span> Preview Jadwal
+    </a>
+    {% if session.get('role') == 'owner' %}
+    <a href="/laporan" class="nav-link">
+      <span class="nav-icon">📄</span> Laporan Owner
+    </a>
+    {% endif %}
+    <a href="/logout" class="nav-link">
+      <span class="nav-icon">🚪</span> Logout
+    </a>
+  </nav>
+  <div class="sidebar-footer">HWStreet Diecast © 2024</div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Kelola Stok</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-crumb">Tambah dan kelola <span>inventori barang</span></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Inventori</div>
+        <div class="page-heading">Kelola Stok Barang</div>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-msg">
+          {% for m in messages %}{{ m }}{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- FORM -->
+    <div class="form-card">
+      <div class="form-card-head">
+        <div class="form-card-title">{% if edit_barang %}Edit Barang{% else %}Tambah Barang{% endif %}</div>
+        <div class="form-card-sub">{% if edit_barang %}Perbarui data barang yang dipilih{% else %}Isi data barang baru{% endif %}</div>
+      </div>
+      <div class="form-body">
+        <form id="barang-form" action="/tambah-barang" method="post">
+          <div class="form-group">
+            <label>Nama Barang</label>
+            <input id="nama-input" type="text" name="nama" placeholder="Hot Wheels Custom..." required value="{{ edit_barang.nama if edit_barang else '' }}">
+          </div>
+          <div class="form-group">
+            <label>Merk</label>
+            <input id="merk-input" type="text" name="merk" placeholder="Hot Wheels, Matchbox..." required value="{{ edit_barang.merk if edit_barang else '' }}">
+          </div>
+          <div class="form-group">
+            <label>Kondisi</label>
+            <input id="kondisi-input" type="text" name="kondisi" placeholder="Baru / Bekas" required value="{{ edit_barang.kondisi if edit_barang else '' }}">
+          </div>
+          <div class="form-group">
+            <label>Harga (Rp)</label>
+            <input id="harga-input" type="number" name="harga" placeholder="0" min="0" required value="{{ edit_barang.harga if edit_barang else '' }}">
+          </div>
+          <div class="form-group">
+            <label>Stok</label>
+            <input id="stok-input" type="number" name="stok" placeholder="0" min="0" required value="{{ edit_barang.stok if edit_barang else '' }}">
+          </div>
+          <button id="submit-button" type="submit" class="btn-primary">{% if edit_barang %}Simpan Perubahan{% else %}+ Tambah Barang{% endif %}</button>
+          <button id="cancel-button" type="button" class="btn-cancel" style="display: none;">Batal</button>
+        </form>
+
+          <div class="form-divider"></div>
+
+          <div class="import-box">
+            <div class="import-title">Import dari Excel</div>
+            <div class="import-help">
+              Format kolom: <b>nama, merk, kondisi, harga, stok</b>. Baris pertama untuk judul kolom.
+            </div>
+            <form action="/import-barang" method="post" enctype="multipart/form-data">
+              <input type="file" name="file_excel" accept=".xlsx" required>
+              <button type="submit" class="btn-excel">📥 Import Excel</button>
+            </form>
+          </div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-panel">
+      <div class="table-panel-head">
+        <span class="table-panel-title">🚗 Daftar Inventori</span>
+        <div class="table-actions">
+          <span class="count-pill">{{ barang|length }} item</span>
+          <form class="sort-form" method="get">
+            <select name="sort" onchange="this.form.submit()">
+              <option value="nama_asc" {% if sort == 'nama_asc' %}selected{% endif %}>Urut nama A → Z</option>
+              <option value="nama_desc" {% if sort == 'nama_desc' %}selected{% endif %}>Urut nama Z → A</option>
+              <option value="stok_desc" {% if sort == 'stok_desc' %}selected{% endif %}>Urut stok terbanyak</option>
+              <option value="stok_asc" {% if sort == 'stok_asc' %}selected{% endif %}>Urut stok sedikit</option>
+            </select>
+          </form>
+          <button type="submit" form="bulk-delete-form" class="btn-mini btn-mini-outline" onclick="return confirm('Hapus barang yang dipilih?')">Hapus Terpilih</button>
+        </div>
+      </div>
+      <form id="bulk-delete-form" action="/hapus-barang-terpilih" method="post"></form>
+      <table>
+        <thead>
+          <tr>
+            <th class="check-cell"><input type="checkbox" id="checkAll"></th>
+            <th>#</th>
+            <th>Nama</th>
+            <th>Merk</th>
+            <th>Kondisi</th>
+            <th>Harga</th>
+            <th>Stok</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in barang %}
+          <tr>
+            <td class="check-cell"><input type="checkbox" name="barang_ids" value="{{ b.id }}" form="bulk-delete-form"></td>
+            <td style="color:var(--text-light);font-size:0.75rem;font-weight:700;">{{ loop.index }}</td>
+            <td class="td-nama">{{ b.nama }}</td>
+            <td class="td-merk">{{ b.merk }}</td>
+            <td>
+              <span class="kondisi-badge {% if b.kondisi|lower == 'baru' %}badge-baru{% else %}badge-bekas{% endif %}">
+                {{ b.kondisi }}
+              </span>
+            </td>
+            <td class="td-harga">Rp {{ "{:,}".format(b.harga) }}</td>
+            <td>
+              <div class="stok-wrap">
+                <span class="stok-num">{{ b.stok }}</span>
+                <div class="stok-bar">
+                </div>
+              </div>
+            </td>
+            <td class="actions-cell">
+              <button type="button" class="btn-edit" data-id="{{ b.id }}" data-nama="{{ b.nama }}" data-merk="{{ b.merk }}" data-kondisi="{{ b.kondisi }}" data-harga="{{ b.harga }}" data-stok="{{ b.stok }}">✏️ Edit</button>
+            </td>
+          </tr>
+          {% else %}
+          <tr class="empty-row">
+            <td colspan="8">📭 Belum ada barang di inventori</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+  const checkAll = document.getElementById('checkAll');
+  const itemChecks = document.querySelectorAll('input[name="barang_ids"]');
+
+  if (checkAll) {
+    checkAll.addEventListener('change', function () {
+      itemChecks.forEach(cb => cb.checked = checkAll.checked);
+    });
+  }
+
+  const editButtons = document.querySelectorAll('.btn-edit');
+
+  function handleEditClick(e) {
+    const btn = e.currentTarget;
+    const tr = btn.closest('tr');
+    if (!tr || tr.dataset.editing === '1') return;
+    tr.dataset.editing = '1';
+    const id = btn.dataset.id;
+
+    const cellNama = tr.querySelector('.td-nama');
+    const cellMerk = tr.querySelector('.td-merk');
+    const badge = tr.querySelector('.kondisi-badge');
+    const cellKondisi = badge ? badge.closest('td') : tr.querySelector('td:nth-child(5)');
+    const cellHarga = tr.querySelector('.td-harga');
+    const stokWrap = tr.querySelector('.stok-wrap');
+
+    const orig = {
+      nama: cellNama ? cellNama.innerText.trim() : '',
+      merk: cellMerk ? cellMerk.innerText.trim() : '',
+      kondisi: badge ? badge.innerText.trim() : '',
+      harga: cellHarga ? cellHarga.innerText.replace(/[^0-9]/g, '') : '0',
+      stok: tr.querySelector('.stok-num') ? tr.querySelector('.stok-num').innerText.trim() : '0'
+    };
+
+    // create inputs
+    const inputNama = document.createElement('input'); inputNama.type='text'; inputNama.value=orig.nama; inputNama.className='inline-input';
+    const inputMerk = document.createElement('input'); inputMerk.type='text'; inputMerk.value=orig.merk; inputMerk.className='inline-input';
+    const inputKondisi = document.createElement('input'); inputKondisi.type='text'; inputKondisi.value=orig.kondisi; inputKondisi.className='inline-input';
+    const inputHarga = document.createElement('input'); inputHarga.type='number'; inputHarga.value=orig.harga; inputHarga.className='inline-input';
+    const inputStok = document.createElement('input'); inputStok.type='number'; inputStok.value=orig.stok; inputStok.className='inline-input';
+
+    if (cellNama) { cellNama.innerHTML=''; cellNama.appendChild(inputNama); }
+    if (cellMerk) { cellMerk.innerHTML=''; cellMerk.appendChild(inputMerk); }
+    if (cellKondisi) { cellKondisi.innerHTML=''; cellKondisi.appendChild(inputKondisi); }
+    if (cellHarga) { cellHarga.innerHTML=''; cellHarga.appendChild(inputHarga); }
+    if (stokWrap) { stokWrap.innerHTML=''; stokWrap.appendChild(inputStok); }
+
+    // actions
+    const actionsCell = tr.querySelector('.actions-cell');
+    actionsCell.innerHTML = '';
+    const saveBtn = document.createElement('button'); saveBtn.className = 'btn-primary btn-save'; saveBtn.textContent = 'Simpan';
+    const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn-cancel btn-cancel-inline'; cancelBtn.textContent = 'Batal';
+    actionsCell.appendChild(saveBtn); actionsCell.appendChild(cancelBtn);
+
+    cancelBtn.addEventListener('click', function() {
+      if (cellNama) cellNama.innerText = orig.nama;
+      if (cellMerk) cellMerk.innerText = orig.merk;
+      if (cellKondisi) cellKondisi.innerHTML = `<span class="kondisi-badge ${orig.kondisi.toLowerCase()==='baru'?'badge-baru':'badge-bekas'}">${orig.kondisi}</span>`;
+      if (cellHarga) cellHarga.innerText = 'Rp ' + Number(orig.harga).toLocaleString('id-ID');
+      if (stokWrap) stokWrap.innerHTML = `<div class="stok-wrap"><span class="stok-num">${orig.stok}</span><div class="stok-bar"></div></div>`;
+      actionsCell.innerHTML = `<button type="button" class="btn-edit" data-id="${id}" data-nama="${orig.nama}" data-merk="${orig.merk}" data-kondisi="${orig.kondisi}" data-harga="${orig.harga}" data-stok="${orig.stok}">✏️ Edit</button>`;
+      const newBtn = actionsCell.querySelector('.btn-edit'); if (newBtn) newBtn.addEventListener('click', handleEditClick);
+      tr.dataset.editing = '0';
+    });
+
+    saveBtn.addEventListener('click', function() {
+      const payload = {
+        nama: inputNama.value,
+        merk: inputMerk.value,
+        kondisi: inputKondisi.value,
+        harga: inputHarga.value,
+        stok: inputStok.value
+      };
+      fetch(`/update-barang/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(r => r.json()).then(data => {
+        if (data && data.status === 'ok') {
+          if (cellNama) cellNama.innerText = data.nama;
+          if (cellMerk) cellMerk.innerText = data.merk;
+          if (cellKondisi) cellKondisi.innerHTML = `<span class="kondisi-badge ${data.kondisi.toLowerCase()==='baru'?'badge-baru':'badge-bekas'}">${data.kondisi}</span>`;
+          if (cellHarga) cellHarga.innerText = 'Rp ' + Number(data.harga).toLocaleString('id-ID');
+          if (stokWrap) stokWrap.innerHTML = `<div class="stok-wrap"><span class="stok-num">${data.stok}</span><div class="stok-bar"></div></div>`;
+          actionsCell.innerHTML = `<button type="button" class="btn-edit" data-id="${id}" data-nama="${data.nama}" data-merk="${data.merk}" data-kondisi="${data.kondisi}" data-harga="${data.harga}" data-stok="${data.stok}">✏️ Edit</button>`;
+          const newBtn = actionsCell.querySelector('.btn-edit'); if (newBtn) newBtn.addEventListener('click', handleEditClick);
+          tr.dataset.editing = '0';
+        } else {
+          alert('Gagal menyimpan perubahan');
+          location.reload();
+        }
+      }).catch(err => { console.error(err); alert('Gagal menyimpan perubahan'); location.reload(); });
+    });
+
+  }
+
+  editButtons.forEach(b => b.addEventListener('click', handleEditClick));
+</script>
+
+</body>
+</html>

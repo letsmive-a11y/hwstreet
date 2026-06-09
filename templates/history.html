@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History Barang — HWStreet Owner</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #F7F8FC; color: #0D0F1C; display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: #0D0F1C; color: white; padding: 24px 18px; position: fixed; top: 0; left: 0; bottom: 0; }
+    .brand { font-size: 20px; font-weight: bold; margin-bottom: 28px; }
+    .nav-link { display: block; color: rgba(255,255,255,0.75); text-decoration: none; padding: 12px 14px; border-radius: 9px; margin-bottom: 8px; font-size: 14px; }
+    .nav-link.active, .nav-link:hover { background: #FF3D00; color: white; }
+    .main { margin-left: 260px; width: calc(100% - 260px); padding: 34px 42px; }
+    h1 { font-size: 28px; margin-bottom: 6px; }
+    .subtitle { color: #6B7089; font-size: 14px; margin-bottom: 24px; }
+    .table-box { background: white; border: 1px solid #ECEEF5; border-radius: 16px; overflow: hidden; }
+    .table-head { padding: 18px 22px; border-bottom: 1px solid #ECEEF5; font-weight: bold; }
+    .table-wrap { width: 100%; overflow-x: auto; }
+    table { width: 100%; min-width: 1100px; border-collapse: collapse; }
+    th { background: #F7F8FC; color: #6B7089; text-align: left; padding: 13px 14px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #ECEEF5; white-space: nowrap; }
+    td { padding: 14px; border-bottom: 1px solid #ECEEF5; font-size: 14px; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    .aksi { font-weight: bold; color: #FF3D00; white-space: nowrap; }
+    .right { text-align: right; font-weight: bold; white-space: nowrap; }
+    .muted { color: #8a8fa8; }
+    .empty { text-align: center; padding: 45px; color: #A8ADBE; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">HWStreet Owner</div>
+    <a href="/laporan" class="nav-link">📄 Laporan Stok</a>
+    <a href="/history" class="nav-link active">🕘 History Barang</a>
+    <a href="/logout" class="nav-link">🚪 Logout</a>
+  </aside>
+
+  <main class="main">
+    <h1>History Barang</h1>
+    <p class="subtitle">Riwayat perubahan harga dan stok yang dilakukan admin</p>
+
+    <div class="table-box">
+      <div class="table-head">Daftar Riwayat Aktivitas</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Waktu</th>
+              <th>Barang</th>
+              <th>Aksi</th>
+              <th>Harga Lama</th>
+              <th>Harga Baru</th>
+              <th>Stok Lama</th>
+              <th>Stok Baru</th>
+              <th>Keterangan</th>
+              <th>Admin</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for h in history %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td class="muted">{{ h.waktu }}</td>
+              <td>{{ h.nama_barang }}</td>
+              <td class="aksi">{{ h.aksi }}</td>
+              <td class="right">Rp {{ "{:,}".format(h.harga_lama or 0).replace(",", ".") }}</td>
+              <td class="right">Rp {{ "{:,}".format(h.harga_baru or 0).replace(",", ".") }}</td>
+              <td class="right">{{ h.stok_lama or 0 }}</td>
+              <td class="right">{{ h.stok_baru or 0 }}</td>
+              <td>{{ h.keterangan }}</td>
+              <td>{{ h.dilakukan_oleh }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="10" class="empty">Belum ada history aktivitas</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

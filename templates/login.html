@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — HWStreet Diecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+
+<!-- LEFT: BRANDING PANEL -->
+<div class="left-panel">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="left-top">
+    <div class="left-brand">
+      <div class="brand-icon">🚗</div>
+      <div>
+        <div class="brand-name-text">HWStreet</div>
+        <div class="brand-sub-text">Diecast Management</div>
+      </div>
+    </div>
+
+    <h1 class="left-headline">
+      Panel<br>
+      <span class="hl">Manajemen</span><br>
+      Lelang
+    </h1>
+    <p class="left-desc">
+      Kelola inventori, jadwal lelang, dan caption promosi diecast Hot Wheels kamu dari satu tempat.
+    </p>
+  </div>
+
+  <div class="left-bottom">
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-dot">📦</div>
+        <span class="feature-text">Manajemen stok barang real-time</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot">🗓</div>
+        <span class="feature-text">Buat & kelola jadwal lelang</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot">✨</div>
+        <span class="feature-text">Generate caption AI otomatis</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: LOGIN FORM -->
+<div class="right-panel">
+  <div class="login-box">
+
+    <div class="login-header">
+      <div class="login-eyebrow">Admin Access</div>
+      <h2 class="login-title">Masuk ke Dashboard</h2>
+      <p class="login-sub">Masukkan kredensial akun admin kamu</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-msg">
+          {% for m in messages %}{{ m }}{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/login" method="post">
+
+      <div class="form-group">
+        <label>Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input
+            type="text"
+            name="username"
+            placeholder="Masukkan username"
+            autocomplete="username"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input
+            type="password"
+            name="password"
+            id="passwordInput"
+            placeholder="Masukkan password"
+            autocomplete="current-password"
+            required
+          >
+          <button type="button" class="toggle-pass" onclick="togglePassword()" title="Tampilkan password">
+            👁
+          </button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="remember-wrap">
+          <input type="checkbox" name="remember">
+          <span class="remember-label">Ingat saya</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-login">Masuk ke Dashboard →</button>
+
+    </form>
+
+    <div class="login-footer">
+      <p class="login-footer-text">
+        HWStreet Diecast &copy; 2024 &nbsp;·&nbsp;
+        <strong>Admin Panel</strong>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function togglePassword() {
+    const input = document.getElementById('passwordInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buat Jadwal — HWStreet Diecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:ital,wght@0,400;0,500;0,600;0,700;0,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/buat-jadwal.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="static/images/logos.png" alt="HWStreet Logo" class="brand-logo">
+    <div class="brand-info">
+      <div class="brand-name">HWStreet</div>
+      <div class="brand-sub">Diecast Mgmt</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Menu Utama</span>
+    <a href="/" class="nav-link">
+      <span class="nav-icon">🏠</span> Dashboard
+    </a>
+    <a href="/barang" class="nav-link">
+      <span class="nav-icon">📦</span> Kelola Stok
+    </a>
+    <a href="/jadwal" class="nav-link">
+      <span class="nav-icon">🗓</span> Jadwal Lelang
+    </a>
+    <a href="/buat-jadwal" class="nav-link active">
+      <span class="nav-icon">➕</span> Buat Jadwal
+    </a>
+    <a href="/jadwal" class="nav-link">
+      <span class="nav-icon">👁</span> Preview Jadwal
+    </a>
+    {% if session.get('role') == 'owner' %}
+    <a href="/laporan" class="nav-link">
+      <span class="nav-icon">📄</span> Laporan Owner
+    </a>
+    {% endif %}
+    <a href="/logout" class="nav-link">
+      <span class="nav-icon">🚪</span> Logout
+    </a>
+  </nav>
+  <div class="sidebar-footer">HWStreet Diecast © 2024</div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Buat Jadwal</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-crumb">Isi formulir untuk <span>jadwal lelang baru</span></div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="form-wrap">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div class="page-eyebrow">Lelang Baru</div>
+        <div class="page-heading">Buat Jadwal Lelang</div>
+      </div>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash-msg">
+            ⚠️ {% for m in messages %}{{ m }}{% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <div class="info-card">
+        <span class="info-card-icon">💡</span>
+        <span>Stok barang akan otomatis berkurang 1 setelah jadwal berhasil dibuat.</span>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-head">
+          <div class="form-card-title">Buat Jadwal Lelang</div>
+          <div class="form-card-sub">Pilih barang, waktu, dan upload poster lelang</div>
+        </div>
+        <div class="form-body">
+          <form action="/buat-jadwal" method="post" enctype="multipart/form-data">
+
+            <div class="section-label">📦 Pilih Barang</div>
+            <div class="form-group">
+              <label>Barang Lelang</label>
+              <input type="search" id="barangSearch" placeholder="Cari barang dengan nama atau merk..." autocomplete="off">
+              <select name="barang_id" id="barangSelect" required>
+                {% for b in barang %}
+                  <option value="{{ b.id }}">
+                    🚗 {{ b.nama }} — {{ b.merk }} | Stok: {{ b.stok }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="divider"></div>
+            <div class="section-label">📅 Waktu Lelang</div>
+            <div class="form-group">
+              <label>Tanggal & Waktu</label>
+              <input type="datetime-local" name="tanggal" required>
+              <span class="help-text">Tentukan tanggal dan jam mulai lelang</span>
+            </div>
+
+            <div class="divider"></div>
+            <div class="section-label">🖼 Poster Lelang</div>
+            <div class="form-group">
+              <label>Upload Poster</label>
+              <input type="file" name="poster" accept="image/*" required>
+              <span class="help-text">Format: PNG, JPG, JPEG, GIF. Ukuran maksimal 5MB.</span>
+            </div>
+
+            <button type="submit" class="btn-primary">🔥 Buat Jadwal Lelang</button>
+            <a href="/jadwal" class="btn-secondary">← Kembali ke daftar jadwal</a>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const barangSearch = document.getElementById('barangSearch');
+  const barangSelect = document.getElementById('barangSelect');
+  const barangOptions = Array.from(barangSelect.options);
+
+  barangSearch.addEventListener('input', () => {
+    const query = barangSearch.value.trim().toLowerCase();
+    let firstVisible = null;
+
+    barangOptions.forEach(option => {
+      const text = option.textContent.toLowerCase();
+      const visible = query === '' || text.includes(query);
+      option.hidden = !visible;
+      if (visible && firstVisible === null) {
+        firstVisible = option;
+      }
+    });
+
+    if (firstVisible) {
+      barangSelect.value = firstVisible.value;
+    }
+  });
+</script>
+
+</body>
+</html>

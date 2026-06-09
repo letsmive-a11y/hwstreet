@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Owner — HWStreet Diecast</title>
+  <link rel="stylesheet" href="/static/css/laporan.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand">HWStreet Owner</div>
+
+    <a href="/laporan" class="nav-link active">📄 Laporan Stok</a>
+    <a href="/history" class="nav-link">🕘 History Barang</a>
+    <a href="/logout" class="nav-link">🚪 Logout</a>
+    
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1>Laporan Stok Barang</h1>
+        <div class="subtitle">Laporan inventori barang diecast untuk owner</div>
+      </div>
+
+      <a href="/laporan/pdf" target="_blank" class="btn-pdf">Cetak PDF</a>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">Total Item</div>
+        <div class="card-value">{{ total_item }}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Total Stok</div>
+        <div class="card-value">{{ total_stok }}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Total Nilai Stok</div>
+        <div class="card-value">Rp {{ "{:,}".format(total_nilai).replace(",", ".") }}</div>
+      </div>
+    </div>
+
+    <div class="table-box">
+      <div class="table-head">Daftar Barang</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Barang</th>
+            <th>Merk</th>
+            <th>Kondisi</th>
+            <th>Harga</th>
+            <th>Stok</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for b in laporan %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ b.nama }}</td>
+            <td>{{ b.merk }}</td>
+            <td>{{ b.kondisi }}</td>
+            <td class="right">Rp {{ "{:,}".format(b.harga).replace(",", ".") }}</td>
+            <td class="right">{{ b.stok }}</td>
+            <td class="right">Rp {{ "{:,}".format(b.total).replace(",", ".") }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="empty">Belum ada data barang</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — HWStreet Diecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:ital,wght@0,400;0,500;0,600;0,700;0,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/index.css">
+</head>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="static/images/logos.png" alt="HWStreet Logo" class="brand-logo">
+    <div class="brand-info">
+      <div class="brand-name">HWStreet</div>
+      <div class="brand-sub">Diecast Mgmt</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Menu Utama</span>
+    <a href="/" class="nav-link active">
+      <span class="nav-icon">🏠</span> Dashboard
+    </a>
+    <a href="/barang" class="nav-link">
+      <span class="nav-icon">📦</span> Kelola Stok
+    </a>
+    <a href="/jadwal" class="nav-link">
+      <span class="nav-icon">🗓</span> Jadwal Lelang
+    </a>
+    <a href="/buat-jadwal" class="nav-link">
+      <span class="nav-icon">➕</span> Buat Jadwal
+    </a>
+    <a href="/jadwal" class="nav-link">
+      <span class="nav-icon">👁</span> Preview Jadwal
+    </a>
+    {% if session.get('role') == 'owner' %}
+    <a href="/laporan" class="nav-link">
+      <span class="nav-icon">📄</span> Laporan Owner
+    </a>
+    {% endif %}
+    <a href="/logout" class="nav-link">
+      <span class="nav-icon">🚪</span> Logout
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    HWStreet Diecast © 2024
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-crumb">Selamat datang di <span>HWStreet Panel</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-pill">
+        <div class="pulse"></div>
+        LIVE
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="page-header-text">
+        <div class="page-eyebrow">Overview</div>
+        <div class="page-heading">Ringkasan Inventori</div>
+      </div>
+      <div class="page-date" id="today-date"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-label">Total Barang</div>
+          <div class="stat-icon red">📦</div>
+        </div>
+        <div class="stat-value">{{ barang|length }}</div>
+        <div class="stat-sub">item di inventori</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-label">Jadwal Lelang</div>
+          <div class="stat-icon yellow">🔨</div>
+        </div>
+        <div class="stat-value">{{ jadwal|length }}</div>
+        <div class="stat-sub">jadwal terdaftar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-label">Stok Tersedia</div>
+          <div class="stat-icon green">✅</div>
+        </div>
+        <div class="stat-value">{{ barang | selectattr('stok', 'gt', 0) | list | length }}</div>
+        <div class="stat-sub">barang siap lelang</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD GRID -->
+    <div class="dashboard-grid">
+
+      <!-- BARANG PANEL -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">🚗 Inventori Terbaru</div>
+          <a href="/barang" class="panel-link">Lihat Semua →</a>
+        </div>
+        <div class="item-list">
+          {% for b in barang[:5] %}
+          <div class="item-row">
+            <div class="item-index">{{ loop.index }}</div>
+            <div class="item-avatar">🚗</div>
+            <div class="item-info">
+              <div class="item-name">{{ b.nama }}</div>
+              <div class="item-meta">{{ b.merk }} · Rp {{ "{:,}".format(b.harga) }}</div>
+            </div>
+            <span class="item-badge {% if b.stok > 0 %}badge-green{% else %}badge-yellow{% endif %}">
+              Stok {{ b.stok }}
+            </span>
+            <a href="/hapus-barang/{{ b.id }}" class="item-badge badge-del" onclick="return confirm('Hapus barang ini?')">Hapus</a>
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>Belum ada barang</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- JADWAL PANEL -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">🗓 Jadwal Terbaru</div>
+          <a href="/jadwal" class="panel-link">Lihat Semua →</a>
+        </div>
+        <div class="item-list">
+          {% for j in jadwal[:5] %}
+          <div class="item-row">
+            <div class="item-index">{{ loop.index }}</div>
+            <div class="item-avatar">🔨</div>
+            <div class="item-info">
+              <div class="item-name">{{ j.barang_nama }}</div>
+              <div class="item-meta">{{ j.tanggal }}</div>
+            </div>
+            <a href="/preview/{{ j.id }}" class="item-badge badge-orange">Preview</a>
+            <a href="/hapus-jadwal/{{ j.id }}" class="item-badge badge-del" onclick="return confirm('Hapus jadwal ini?')">Hapus</a>
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">📅</div>
+            <p>Belum ada jadwal</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const d = new Date();
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('today-date').textContent = d.toLocaleDateString('id-ID', opts);
+</script>
+
+</body>
+</html>
