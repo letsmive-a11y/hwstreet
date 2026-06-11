@@ -1,7 +1,0 @@
-Flask
-gunicorn
-psycopg2-binary
-openpyxl
-reportlab
-Pillow
-Werkzeug
