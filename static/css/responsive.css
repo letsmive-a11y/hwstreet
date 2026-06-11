@@ -1,0 +1,309 @@
+html {
+  overflow-x: hidden;
+}
+
+body {
+  max-width: 100%;
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
+.main-wrap,
+.main,
+.content,
+.topbar,
+.table-panel,
+.table-box,
+.panel,
+.form-card,
+.preview-grid,
+.dashboard-grid,
+.stats-grid,
+.cards {
+  min-width: 0;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-wrap table {
+  min-width: 760px;
+}
+
+.table-box .table-wrap table {
+  min-width: 900px;
+}
+
+@media (max-width: 1280px) {
+  :root {
+    --sidebar-w: 230px;
+  }
+
+  .content,
+  .main {
+    padding: 28px 24px !important;
+  }
+
+  .content {
+    gap: 18px;
+  }
+
+  .stats-grid,
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .preview-grid {
+    grid-template-columns: minmax(300px, 380px) minmax(0, 1fr) !important;
+  }
+
+  th,
+  td {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .content {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-card {
+    position: static !important;
+  }
+
+  .dashboard-grid,
+  .preview-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cards,
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+  }
+
+  .page-header,
+  .top,
+  .topbar,
+  .table-panel-head,
+  .panel-head {
+    gap: 12px;
+  }
+
+  .table-panel-head,
+  .panel-head {
+    flex-wrap: wrap;
+  }
+
+  .image-wrap {
+    max-height: 520px;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    display: block !important;
+    overflow-x: hidden !important;
+  }
+
+  .sidebar {
+    position: static !important;
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding: 14px !important;
+    overflow: visible !important;
+  }
+
+  .sidebar::before,
+  .sidebar::after {
+    display: none !important;
+  }
+
+  .sidebar-brand {
+    padding: 8px 4px 14px !important;
+  }
+
+  .sidebar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+
+  .nav-section-label,
+  .sidebar-footer {
+    display: none !important;
+  }
+
+  .nav-link {
+    flex: 1 1 150px;
+    justify-content: center;
+    margin: 0 !important;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .main-wrap,
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .topbar,
+  .top {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 16px !important;
+    flex-wrap: wrap;
+    align-items: flex-start !important;
+  }
+
+  .topbar-left,
+  .topbar-right,
+  .page-header,
+  .top {
+    width: 100%;
+  }
+
+  .topbar-left,
+  .page-header,
+  .top {
+    flex-wrap: wrap;
+  }
+
+  .topbar-divider {
+    display: none !important;
+  }
+
+  .content,
+  .main {
+    padding: 20px 16px 28px !important;
+  }
+
+  .page-heading,
+  h1 {
+    font-size: 1.45rem !important;
+  }
+
+  .form-wrap {
+    max-width: 100% !important;
+  }
+
+  .action-row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .left-panel {
+    display: none !important;
+  }
+
+  .login-page {
+    position: static !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    overflow: auto !important;
+    display: block !important;
+  }
+
+  .right-panel {
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    padding: 20px 14px !important;
+    overflow: visible !important;
+  }
+
+  .login-box {
+    width: min(100%, 420px) !important;
+  }
+
+  .brand-info {
+    min-width: 0;
+  }
+
+  .brand-name,
+  .topbar-title,
+  .panel-title,
+  .table-panel-title {
+    overflow-wrap: anywhere;
+  }
+
+  .table-actions,
+  .sort-form,
+  .sort-form select,
+  .btn-mini,
+  .btn-new,
+  .btn-pdf,
+  .back-btn {
+    width: 100%;
+  }
+
+  .table-actions {
+    justify-content: stretch !important;
+  }
+
+  .item-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .item-info {
+    flex-basis: calc(100% - 70px);
+  }
+}
+
+@media (max-width: 520px) {
+  .sidebar {
+    padding: 12px !important;
+  }
+
+  .nav-link {
+    flex-basis: calc(50% - 4px);
+    padding: 9px 8px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .content,
+  .main {
+    padding: 16px 12px 24px !important;
+  }
+
+  .form-card-head,
+  .form-body,
+  .panel-head,
+  .caption-header,
+  .caption-body,
+  .action-row,
+  .tips-card,
+  .table-panel-head,
+  .table-head,
+  .card {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .stats-grid,
+  .cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  .table-wrap table {
+    min-width: 720px;
+  }
+}
