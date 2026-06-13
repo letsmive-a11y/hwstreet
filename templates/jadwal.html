@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jadwal Lelang — HWStreet Diecast</title>
+  <title>Kelola Jadwal - HWStreet Diecast</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:ital,wght@0,400;0,500;0,600;0,700;0,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/jadwal.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     <img src="static/images/logos.png" alt="HWStreet Logo" class="brand-logo">
@@ -22,95 +21,229 @@
   <nav class="sidebar-nav">
     <span class="nav-section-label">Menu Utama</span>
     <a href="/" class="nav-link">
-      <span class="nav-icon">🏠</span> Dashboard
+      <span class="nav-icon">&#127968;</span> Dashboard
     </a>
     <a href="/barang" class="nav-link">
-      <span class="nav-icon">📦</span> Kelola Stok
+      <span class="nav-icon">&#128230;</span> Kelola Stok
     </a>
     <a href="/jadwal" class="nav-link active">
-      <span class="nav-icon">🗓</span> Jadwal Lelang
-    </a>
-    <a href="/buat-jadwal" class="nav-link">
-      <span class="nav-icon">➕</span> Buat Jadwal
-    </a>
-    <a href="/jadwal" class="nav-link">
-      <span class="nav-icon">👁</span> Preview Jadwal
+      <span class="nav-icon">&#128197;</span> Kelola Jadwal
     </a>
     {% if session.get('role') == 'owner' %}
     <a href="/laporan" class="nav-link">
-      <span class="nav-icon">📄</span> Laporan Owner
+      <span class="nav-icon">&#128196;</span> Laporan Owner
     </a>
     {% endif %}
     <a href="/logout" class="nav-link">
-      <span class="nav-icon">🚪</span> Logout
+      <span class="nav-icon">&#128682;</span> Logout
     </a>
   </nav>
-  <div class="sidebar-footer">HWStreet Diecast © 2024</div>
+  <div class="sidebar-footer">HWStreet Diecast &copy; 2024</div>
 </aside>
 
-<!-- MAIN -->
 <div class="main-wrap">
   <div class="topbar">
     <div class="topbar-left">
-      <div class="topbar-title">Jadwal Lelang</div>
+      <div class="topbar-title">Kelola Jadwal</div>
       <div class="topbar-divider"></div>
-      <div class="topbar-crumb">Kelola dan pantau <span>semua jadwal lelang</span></div>
+      <div class="topbar-crumb">Buat, pantau, dan preview <span>jadwal lelang</span></div>
     </div>
-    <a href="/buat-jadwal" class="btn-new">➕ Buat Jadwal Baru</a>
   </div>
 
   <div class="content">
-
-    <!-- PAGE HEADER -->
     <div class="page-header">
       <div>
         <div class="page-eyebrow">Lelang</div>
-        <div class="page-heading">Jadwal Lelang</div>
+        <div class="page-heading">Kelola Jadwal Lelang</div>
       </div>
+      <span class="count-pill">{{ jadwal|length }} jadwal</span>
     </div>
 
-    <div class="table-panel">
-      <div class="table-panel-head">
-        <span class="table-panel-title">🗓 Daftar Jadwal Lelang</span>
-        <span class="count-pill">{{ jadwal|length }} jadwal</span>
-      </div>
-      <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nama Barang</th>
-            <th>Merk</th>
-            <th>Tanggal & Waktu</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for j in jadwal %}
-          <tr>
-            <td class="td-num">{{ loop.index }}</td>
-            <td class="td-nama">{{ j.nama }}</td>
-            <td class="td-merk">{{ j.merk }}</td>
-            <td class="td-tanggal">{{ j.tanggal }}</td>
-            <td>
-              <a href="/preview/{{ j.id }}" class="btn-preview">👁 Preview</a>
-              <a href="/hapus-jadwal/{{ j.id }}" class="btn-hapus" onclick="return confirm('Hapus jadwal ini?')">🗑 Hapus</a>
-            </td>
-          </tr>
-          {% else %}
-          <tr class="empty-row">
-            <td colspan="5">
-              <span class="empty-icon">🏁</span>
-              Belum ada jadwal lelang — <a href="/buat-jadwal" style="color:var(--accent);font-weight:600;">buat sekarang</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-msg">
+          {% for m in messages %}{{ m }}{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="schedule-grid">
+      <section class="form-card">
+        <div class="form-card-head">
+          <div>
+            <div class="form-card-title">Buat Jadwal</div>
+            <div class="form-card-sub">Pilih barang, waktu, dan poster lelang</div>
+          </div>
+        </div>
+        <div class="form-body">
+          <form action="/buat-jadwal" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+              <label>Barang Lelang</label>
+              <input type="search" id="barangSearch" placeholder="Cari barang dengan nama atau merk..." autocomplete="off">
+              <select name="barang_id" id="barangSelect" required>
+                {% for b in barang %}
+                <option value="{{ b.id }}">
+                  {{ b.nama }} - {{ b.merk }} | Stok: {{ b.stok }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Tanggal & Waktu</label>
+              <input type="datetime-local" name="tanggal" required>
+            </div>
+
+            <div class="form-group">
+              <label>Upload Poster</label>
+              <input type="file" name="poster" accept="image/*" required>
+              <span class="help-text">Format PNG, JPG, JPEG, atau GIF.</span>
+            </div>
+
+            <button type="submit" class="btn-primary">Buat Jadwal Lelang</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="table-panel">
+        <div class="table-panel-head">
+          <span class="table-panel-title">Daftar Jadwal Lelang</span>
+          <span class="count-pill">{{ jadwal|length }} jadwal</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama Barang</th>
+                <th>Merk</th>
+                <th>Tanggal & Waktu</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for j in jadwal %}
+              <tr>
+                <td class="td-num">{{ loop.index }}</td>
+                <td class="td-nama">{{ j.nama }}</td>
+                <td class="td-merk">{{ j.merk }}</td>
+                <td class="td-tanggal">{{ j.tanggal }}</td>
+                <td>
+                  <button type="button" class="btn-preview" data-preview-id="{{ j.id }}">Preview</button>
+                  <a href="/hapus-jadwal/{{ j.id }}" class="btn-hapus" onclick="return confirm('Hapus jadwal ini?')">Hapus</a>
+                </td>
+              </tr>
+              {% else %}
+              <tr class="empty-row">
+                <td colspan="5">
+                  <span class="empty-icon">&#127937;</span>
+                  Belum ada jadwal lelang. Buat jadwal dari form di samping.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
+
+    <section class="preview-panel">
+      <div class="preview-empty" id="previewEmpty" {% if jadwal %}style="display:none;"{% endif %}>
+        <div class="preview-empty-icon">&#128269;</div>
+        <div class="preview-empty-title">Belum ada preview</div>
+        <div class="preview-empty-text">Pilih tombol Preview dari daftar jadwal setelah jadwal dibuat.</div>
+      </div>
+
+      {% for j in jadwal %}
+      <article class="preview-card{% if loop.first %} active{% endif %}" id="preview-{{ j.id }}">
+        <div class="preview-card-head">
+          <div>
+            <div class="preview-label">Preview Jadwal</div>
+            <div class="preview-title">{{ j.nama }}</div>
+          </div>
+          <span class="preview-status">Siap Lelang</span>
+        </div>
+        <div class="preview-layout">
+          <div class="preview-image-wrap">
+            <img src="/{{ j.image }}" alt="{{ j.nama }}">
+          </div>
+          <div class="preview-detail">
+            <div class="preview-meta">
+              <span>{{ j.merk }}</span>
+              <span>{{ j.tanggal }}</span>
+            </div>
+            <div class="caption-header">
+              <span>Caption Lelang</span>
+              <div class="preview-actions">
+                <button type="button" class="btn-copy" data-caption="{{ j.caption|e }}">Copy</button>
+                <a href="https://instagram.com/hwstreet.diecast" target="_blank" rel="noopener" class="btn-instagram">Instagram</a>
+              </div>
+            </div>
+            <div class="caption-body">{{ j.caption }}</div>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </section>
   </div>
 </div>
+
+<div class="toast" id="toast">Caption berhasil disalin!</div>
+
+<script>
+  const barangSearch = document.getElementById('barangSearch');
+  const barangSelect = document.getElementById('barangSelect');
+  const barangOptions = barangSelect ? Array.from(barangSelect.options) : [];
+
+  if (barangSearch && barangSelect) {
+    barangSearch.addEventListener('input', () => {
+      const query = barangSearch.value.trim().toLowerCase();
+      let firstVisible = null;
+
+      barangOptions.forEach(option => {
+        const visible = query === '' || option.textContent.toLowerCase().includes(query);
+        option.hidden = !visible;
+        if (visible && firstVisible === null) firstVisible = option;
+      });
+
+      if (firstVisible) barangSelect.value = firstVisible.value;
+    });
+  }
+
+  const previewCards = document.querySelectorAll('.preview-card');
+  const previewEmpty = document.getElementById('previewEmpty');
+
+  function showPreview(id, shouldScroll = true) {
+    const target = document.getElementById(`preview-${id}`);
+    previewCards.forEach(card => card.classList.remove('active'));
+    if (target) {
+      if (previewEmpty) previewEmpty.style.display = 'none';
+      target.classList.add('active');
+      if (shouldScroll) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  document.querySelectorAll('[data-preview-id]').forEach(button => {
+    button.addEventListener('click', () => {
+      showPreview(button.dataset.previewId);
+      history.replaceState(null, '', `#preview-${button.dataset.previewId}`);
+    });
+  });
+
+  if (window.location.hash.startsWith('#preview-')) {
+    showPreview(window.location.hash.replace('#preview-', ''), false);
+  }
+
+  document.querySelectorAll('.btn-copy').forEach(button => {
+    button.addEventListener('click', () => {
+      navigator.clipboard.writeText(button.dataset.caption || '').then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      });
+    });
+  });
+</script>
 
 </body>
 </html>

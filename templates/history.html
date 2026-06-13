@@ -3,47 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History Barang - HWStreet Owner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:ital,wght@0,400;0,500;0,600;0,700;0,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/laporan.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
-  <title>History Barang — HWStreet Owner</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background: #F7F8FC; color: #0D0F1C; display: flex; min-height: 100vh; }
-    .sidebar { width: 260px; background: #0D0F1C; color: white; padding: 24px 18px; position: fixed; top: 0; left: 0; bottom: 0; }
-    .brand { font-size: 20px; font-weight: bold; margin-bottom: 28px; }
-    .nav-link { display: block; color: rgba(255,255,255,0.75); text-decoration: none; padding: 12px 14px; border-radius: 9px; margin-bottom: 8px; font-size: 14px; }
-    .nav-link.active, .nav-link:hover { background: #FF3D00; color: white; }
-    .main { margin-left: 260px; width: calc(100% - 260px); padding: 34px 42px; }
-    h1 { font-size: 28px; margin-bottom: 6px; }
-    .subtitle { color: #6B7089; font-size: 14px; margin-bottom: 24px; }
-    .table-box { background: white; border: 1px solid #ECEEF5; border-radius: 16px; overflow: hidden; }
-    .table-head { padding: 18px 22px; border-bottom: 1px solid #ECEEF5; font-weight: bold; }
-    .table-wrap { width: 100%; overflow-x: auto; }
-    table { width: 100%; min-width: 1100px; border-collapse: collapse; }
-    th { background: #F7F8FC; color: #6B7089; text-align: left; padding: 13px 14px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #ECEEF5; white-space: nowrap; }
-    td { padding: 14px; border-bottom: 1px solid #ECEEF5; font-size: 14px; vertical-align: top; }
-    tr:last-child td { border-bottom: none; }
-    .aksi { font-weight: bold; color: #FF3D00; white-space: nowrap; }
-    .right { text-align: right; font-weight: bold; white-space: nowrap; }
-    .muted { color: #8a8fa8; }
-    .empty { text-align: center; padding: 45px; color: #A8ADBE; }
-  </style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="brand">HWStreet Owner</div>
-    <a href="/laporan" class="nav-link">📄 Laporan Stok</a>
-    <a href="/history" class="nav-link active">🕘 History Barang</a>
-    <a href="/logout" class="nav-link">🚪 Logout</a>
-  </aside>
 
-  <main class="main">
-    <h1>History Barang</h1>
-    <p class="subtitle">Riwayat perubahan harga dan stok yang dilakukan admin</p>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="/static/images/logos.png" alt="HWStreet Logo" class="brand-logo">
+    <div class="brand-info">
+      <div class="brand-name">HWStreet</div>
+      <div class="brand-sub">Owner Panel</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Menu Owner</span>
+    <a href="/laporan" class="nav-link">
+      <span class="nav-icon">&#128196;</span> Laporan Stok
+    </a>
+    <a href="/history" class="nav-link active">
+      <span class="nav-icon">&#128336;</span> History Barang
+    </a>
+    <a href="/logout" class="nav-link">
+      <span class="nav-icon">&#128682;</span> Logout
+    </a>
+  </nav>
+  <div class="sidebar-footer">HWStreet Diecast &copy; 2024</div>
+</aside>
 
-    <div class="table-box">
-      <div class="table-head">Daftar Riwayat Aktivitas</div>
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">History Barang</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-crumb">Riwayat perubahan <span>harga dan stok</span></div>
+    </div>
+  </div>
+
+  <main class="content">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Owner</div>
+        <div class="page-heading">History Barang</div>
+      </div>
+      <span class="count-pill">{{ history|length }} aktivitas</span>
+    </div>
+
+    <section class="table-box">
+      <div class="table-head">
+        <span class="table-title">Daftar Riwayat Aktivitas</span>
+        <span class="count-pill">{{ history|length }} aktivitas</span>
+      </div>
       <div class="table-wrap">
-        <table>
+        <table class="history-table">
           <thead>
             <tr>
               <th>No</th>
@@ -61,16 +75,16 @@
           <tbody>
             {% for h in history %}
             <tr>
-              <td>{{ loop.index }}</td>
+              <td class="td-num">{{ loop.index }}</td>
               <td class="muted">{{ h.waktu }}</td>
-              <td>{{ h.nama_barang }}</td>
-              <td class="aksi">{{ h.aksi }}</td>
+              <td class="td-nama">{{ h.nama_barang }}</td>
+              <td><span class="aksi-badge">{{ h.aksi }}</span></td>
               <td class="right">Rp {{ "{:,}".format(h.harga_lama or 0).replace(",", ".") }}</td>
               <td class="right">Rp {{ "{:,}".format(h.harga_baru or 0).replace(",", ".") }}</td>
               <td class="right">{{ h.stok_lama or 0 }}</td>
               <td class="right">{{ h.stok_baru or 0 }}</td>
               <td>{{ h.keterangan }}</td>
-              <td>{{ h.dilakukan_oleh }}</td>
+              <td class="muted">{{ h.dilakukan_oleh }}</td>
             </tr>
             {% else %}
             <tr>
@@ -80,7 +94,9 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   </main>
+</div>
+
 </body>
 </html>

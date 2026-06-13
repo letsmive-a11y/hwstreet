@@ -20,6 +20,7 @@ video {
 .panel,
 .form-card,
 .preview-grid,
+.schedule-grid,
 .dashboard-grid,
 .stats-grid,
 .cards {
@@ -59,7 +60,8 @@ video {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 
-  .dashboard-grid {
+  .dashboard-grid,
+  .schedule-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
@@ -84,6 +86,8 @@ video {
   }
 
   .dashboard-grid,
+  .schedule-grid,
+  .preview-layout,
   .preview-grid {
     grid-template-columns: 1fr !important;
   }

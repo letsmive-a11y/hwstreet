@@ -608,20 +608,7 @@ def form_jadwal():
     auth = login_required()
     if auth:
         return auth
-
-    conn = connect_db()
-    cur = conn.cursor()
-    cur.execute('SELECT id, nama, merk, kondisi, harga, stok FROM barang')
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
-
-    barang = [
-        {'id': r[0], 'nama': r[1], 'merk': r[2], 'kondisi': r[3], 'harga': r[4], 'stok': r[5]}
-        for r in rows
-    ]
-
-    return render_template('buat_jadwal.html', barang=barang)
+    return redirect('/jadwal')
 
 
 @app.route('/buat-jadwal', methods=['POST'])
@@ -643,7 +630,7 @@ def buat_jadwal():
         cur.close()
         conn.close()
         flash('Barang tidak ditemukan.')
-        return redirect('/buat-jadwal')
+        return redirect('/jadwal')
 
     nama_barang = barang[1]
     harga_barang = int(barang[4] or 0)
@@ -653,13 +640,13 @@ def buat_jadwal():
         cur.close()
         conn.close()
         flash('Stok habis! Tidak bisa buat jadwal.')
-        return redirect('/buat-jadwal')
+        return redirect('/jadwal')
 
     if 'poster' not in request.files or request.files['poster'].filename == '':
         cur.close()
         conn.close()
         flash('Tidak ada file poster yang dipilih.')
-        return redirect('/buat-jadwal')
+        return redirect('/jadwal')
 
     file = request.files['poster']
     if file and allowed_file(file.filename):
@@ -671,7 +658,7 @@ def buat_jadwal():
         cur.close()
         conn.close()
         flash('Format file tidak didukung. Gunakan PNG, JPG, JPEG, atau GIF.')
-        return redirect('/buat-jadwal')
+        return redirect('/jadwal')
 
     caption = generate_caption(nama_barang, barang[2], barang[3], harga_barang, tanggal)
 
@@ -711,18 +698,29 @@ def jadwal():
 
     conn = connect_db()
     cur = conn.cursor()
+
+    cur.execute('SELECT id, nama, merk, kondisi, harga, stok FROM barang ORDER BY nama ASC')
+    barang_rows = cur.fetchall()
+
     cur.execute("""
-        SELECT j.id, b.nama AS nama, b.merk AS merk, j.tanggal
+        SELECT j.id, b.nama AS nama, b.merk AS merk, j.tanggal, j.caption, j.image
         FROM jadwal j
         JOIN barang b ON j.barang_id = b.id
         ORDER BY j.id DESC
     """)
-    rows = cur.fetchall()
+    jadwal_rows = cur.fetchall()
     cur.close()
     conn.close()
 
-    data = [{'id': r[0], 'nama': r[1], 'merk': r[2], 'tanggal': r[3]} for r in rows]
-    return render_template('jadwal.html', jadwal=data)
+    barang = [
+        {'id': r[0], 'nama': r[1], 'merk': r[2], 'kondisi': r[3], 'harga': r[4], 'stok': r[5]}
+        for r in barang_rows
+    ]
+    data = [
+        {'id': r[0], 'nama': r[1], 'merk': r[2], 'tanggal': r[3], 'caption': r[4], 'image': r[5]}
+        for r in jadwal_rows
+    ]
+    return render_template('jadwal.html', jadwal=data, barang=barang)
 
 
 @app.route('/hapus-jadwal/<int:id>')

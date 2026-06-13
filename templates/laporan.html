@@ -3,29 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laporan Owner — HWStreet Diecast</title>
+  <title>Laporan Owner - HWStreet Diecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:ital,wght@0,400;0,500;0,600;0,700;0,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/laporan.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
 </head>
 <body>
 
-  <aside class="sidebar">
-    <div class="brand">HWStreet Owner</div>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="/static/images/logos.png" alt="HWStreet Logo" class="brand-logo">
+    <div class="brand-info">
+      <div class="brand-name">HWStreet</div>
+      <div class="brand-sub">Owner Panel</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Menu Owner</span>
+    <a href="/laporan" class="nav-link active">
+      <span class="nav-icon">&#128196;</span> Laporan Stok
+    </a>
+    <a href="/history" class="nav-link">
+      <span class="nav-icon">&#128336;</span> History Barang
+    </a>
+    <a href="/logout" class="nav-link">
+      <span class="nav-icon">&#128682;</span> Logout
+    </a>
+  </nav>
+  <div class="sidebar-footer">HWStreet Diecast &copy; 2024</div>
+</aside>
 
-    <a href="/laporan" class="nav-link active">📄 Laporan Stok</a>
-    <a href="/history" class="nav-link">🕘 History Barang</a>
-    <a href="/logout" class="nav-link">🚪 Logout</a>
-    
-  </aside>
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Laporan Owner</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-crumb">Pantau nilai dan stok <span>inventori barang</span></div>
+    </div>
+    <a href="/laporan/pdf" target="_blank" class="btn-pdf">Cetak PDF</a>
+  </div>
 
-  <main class="main">
-    <div class="top">
+  <main class="content">
+    <div class="page-header">
       <div>
-        <h1>Laporan Stok Barang</h1>
-        <div class="subtitle">Laporan inventori barang diecast untuk owner</div>
+        <div class="page-eyebrow">Owner</div>
+        <div class="page-heading">Laporan Stok Barang</div>
       </div>
-
-      <a href="/laporan/pdf" target="_blank" class="btn-pdf">Cetak PDF</a>
     </div>
 
     <div class="cards">
@@ -33,56 +56,56 @@
         <div class="card-label">Total Item</div>
         <div class="card-value">{{ total_item }}</div>
       </div>
-
       <div class="card">
         <div class="card-label">Total Stok</div>
         <div class="card-value">{{ total_stok }}</div>
       </div>
-
       <div class="card">
         <div class="card-label">Total Nilai Stok</div>
         <div class="card-value">Rp {{ "{:,}".format(total_nilai).replace(",", ".") }}</div>
       </div>
     </div>
 
-    <div class="table-box">
-      <div class="table-head">Daftar Barang</div>
-
-      <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama Barang</th>
-            <th>Merk</th>
-            <th>Kondisi</th>
-            <th>Harga</th>
-            <th>Stok</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for b in laporan %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ b.nama }}</td>
-            <td>{{ b.merk }}</td>
-            <td>{{ b.kondisi }}</td>
-            <td class="right">Rp {{ "{:,}".format(b.harga).replace(",", ".") }}</td>
-            <td class="right">{{ b.stok }}</td>
-            <td class="right">Rp {{ "{:,}".format(b.total).replace(",", ".") }}</td>
-          </tr>
-          {% else %}
-          <tr>
-            <td colspan="7" class="empty">Belum ada data barang</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <section class="table-box">
+      <div class="table-head">
+        <span class="table-title">Daftar Barang</span>
+        <span class="count-pill">{{ total_item }} item</span>
       </div>
-    </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama Barang</th>
+              <th>Merk</th>
+              <th>Kondisi</th>
+              <th>Harga</th>
+              <th>Stok</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in laporan %}
+            <tr>
+              <td class="td-num">{{ loop.index }}</td>
+              <td class="td-nama">{{ b.nama }}</td>
+              <td class="td-merk">{{ b.merk }}</td>
+              <td>{{ b.kondisi }}</td>
+              <td class="right">Rp {{ "{:,}".format(b.harga).replace(",", ".") }}</td>
+              <td class="right">{{ b.stok }}</td>
+              <td class="right">Rp {{ "{:,}".format(b.total).replace(",", ".") }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" class="empty">Belum ada data barang</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
+</div>
 
 </body>
 </html>
